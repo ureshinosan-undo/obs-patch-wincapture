@@ -1,0 +1,55 @@
+# This workflow will build a golang project
+# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-go
+
+name: Go
+
+on:
+  push:
+    branches: [ "main" ]
+    tags:
+      - 'v*'  # タグがプッシュされたときにもワークフローを実行
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+
+  build:
+    runs-on: windows-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Set up Go
+      uses: actions/setup-go@v4
+      with:
+        go-version: '1.24.1'
+
+    - name: Windows 用 exe をビルド
+      run: go build -o obs_wincap_patch.exe main.go
+        
+    - name: アーティファクトとして exe を保存
+      uses: actions/upload-artifact@v4
+      with:
+       name: obs_wincap_patch
+       path: obs_wincap_patch.exe
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v4  # v3からv4へ更新
+        with:
+          name: obs_wincap_patch
+          path: .  # ダウンロード先のパスを明示的に指定
+
+      - name: List files
+        run: ls -la  # ファイルが正しくダウンロードされたか確認するためのステップ
+        
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: obs_wincap_patch.exe  # パスの修正
+          generate_release_notes: true  # 自動でリリースノートを生成
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
