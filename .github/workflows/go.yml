@@ -10,7 +10,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-  
+
   build:
     runs-on: windows-latest
     steps:
@@ -27,20 +27,23 @@ jobs:
     - name: アーティファクトとして exe を保存
       uses: actions/upload-artifact@v4
       with:
-       name: obs_wincap_patch_exe
+       name: obs_wincap_patch
        path: obs_wincap_patch.exe
 
   release:
     needs: build
     runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/')  # タグがプッシュされた場合のみリリースを作成
     steps:
       - name: Download artifacts
         uses: actions/download-artifact@v3
+        with:
+          name: obs_wincap_patch
 
       - name: Create Release
         uses: softprops/action-gh-release@v1
         with:
-          files: |
-            obs_wincap_patch_exe/obs_wincap_patch.exe
+          files: obs_wincap_patch.exe  # パスの修正
+          generate_release_notes: true  # 自動でリリースノートを生成
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
