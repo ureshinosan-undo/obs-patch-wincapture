@@ -3,6 +3,10 @@
 OBS Studioのwin-captureプラグインとフックDLLを簡単に更新するためのユーティリティです。  
 このツールは、OBSの画面キャプチャコンポーネントを更新する際の手動作業を自動化します。
 
+# blog
+https://note.com/ureshinosan/n/n8cfff3f1e200
+
+
 # 注意
 100%の動作は保証しません。  
 OBSのバックアップは念のためにとっておきましょう。  
