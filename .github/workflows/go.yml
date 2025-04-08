@@ -10,7 +10,7 @@ on:
     branches: [ "main" ]
 
 jobs:
-
+  
   build:
     runs-on: windows-latest
     steps:
@@ -29,3 +29,18 @@ jobs:
       with:
        name: obs_wincap_patch_exe
        path: obs_wincap_patch.exe
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download artifacts
+        uses: actions/download-artifact@v3
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            obs_wincap_patch_exe/obs_wincap_patch.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
